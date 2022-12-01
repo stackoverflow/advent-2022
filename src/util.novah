@@ -1,0 +1,13 @@
+module util
+
+pub
+readDay : Int32 -> String
+readDay day =
+  IO.readText (format "./resources/day%d.txt" [day] |> IO.newFile)
+
+pub
+readProcess : Int32 -> String -> (String -> a) -> List a
+readProcess day sep mapFn =
+  readDay day
+  |> String.split sep
+  |> List.map mapFn

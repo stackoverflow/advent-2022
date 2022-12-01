@@ -1,0 +1,15 @@
+module test.main
+
+import day1 as D1
+import novah.test
+
+#[test: "Day 1 test"]
+day1Test : Unit -> Unit
+day1Test () =
+  D1.part1 () `shouldBe` 74394
+  D1.part2 () `shouldBe` 212836
+
+pub
+main : Array String -> Unit
+main _ =
+  runTests () |> exit
