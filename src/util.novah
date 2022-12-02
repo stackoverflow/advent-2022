@@ -8,6 +8,4 @@ readDay day =
 pub
 readProcess : Int32 -> String -> (String -> a) -> List a
 readProcess day sep mapFn =
-  readDay day
-  |> String.split sep
-  |> List.map mapFn
+  readDay day |> String.split sep |> List.map mapFn

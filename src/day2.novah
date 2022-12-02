@@ -1,0 +1,31 @@
+module day2
+
+import util (readProcess)
+
+input : List (List String)
+input =
+  readProcess 2 "\n" (Re.find #"(\w) (\w)" >> List.drop 1)
+
+sumWeights : List Int32 -> Int32
+sumWeights ws =
+  input |> List.sumOf case _ of
+    ["A", "X"] -> ws.[0]
+    ["A", "Y"] -> ws.[1]
+    ["A", "Z"] -> ws.[2]
+    ["B", "X"] -> ws.[3]
+    ["B", "Y"] -> ws.[4]
+    ["B", "Z"] -> ws.[5]
+    ["C", "X"] -> ws.[6]
+    ["C", "Y"] -> ws.[7]
+    ["C", "Z"] -> ws.[8]
+    _ -> 0
+
+pub
+part1 : Unit -> Int32
+part1 () =
+  sumWeights [4, 8, 3, 1, 5, 9, 7, 2, 6]
+
+pub
+part2 : Unit -> Int32
+part2 () =
+  sumWeights [3, 4, 8, 1, 5, 9, 2, 6, 7]
