@@ -1,0 +1,29 @@
+module day3
+
+import util (readProcess)
+
+input : List (List Int32)
+input =
+  let toInt c =
+    if Char#isLowerCase(c) then int c - 96 else int c - 38
+  readProcess 3 "\n" (String.toList >> List.map toInt)
+
+findCommon : List (List Int32) -> Int32
+findCommon ls =
+  let common = (List.reduce (\l1 l2 -> List.filter (_ in l2) l1) ls)!!
+  common.[0]
+
+pub
+part1 : Unit -> Int32
+part1 () =
+  let splitHalf list =
+    List.take (len list / 2) list ; List.drop (len list / 2) list
+  input
+  |> List.map splitHalf
+  |> List.map (\(l1 ; l2) -> findCommon [l1, l2])
+  |> List.sum
+
+pub
+part2 : Unit -> Int32
+part2 () =
+  input |> List.partition 3 |> List.map findCommon |> List.sum
