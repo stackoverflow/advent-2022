@@ -3,6 +3,7 @@ module test.main
 import day1 as D1
 import day2 as D2
 import day3 as D3
+import day4 as D4
 import novah.test
 
 #[test: "Day 1 test"]
@@ -22,6 +23,12 @@ day3Test : Unit -> Unit
 day3Test () =
   D3.part1 () `shouldBe` 8240
   D3.part2 () `shouldBe` 2587
+
+#[test: "Day 4 test"]
+day4Test : Unit -> Unit
+day4Test () =
+  D4.part1 () `shouldBe` 490
+  D4.part2 () `shouldBe` 921
 
 pub
 main : Array String -> Unit

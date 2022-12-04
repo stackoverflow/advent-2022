@@ -14,8 +14,4 @@ part1 () =
 pub
 part2 : Unit -> Int32
 part2 () =
-  input
-  |> List.sort
-  |> List.reverse
-  |> List.take 3
-  |> List.sum
+  input |> List.sort |> List.reverse |> List.take 3 |> List.sum

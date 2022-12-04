@@ -1,0 +1,26 @@
+module day4
+
+import util (readProcess)
+
+#[noWarn]
+input : List (Tuple (Range Int) (Range Int))
+input =
+  let parse line =
+    let [_, xs, xe, ys, ye] = Re.find #"(\d+)-(\d+),(\d+)-(\d+)" line
+    int xs .. int xe ; int ys .. int ye
+  readProcess 4 "\n" parse
+
+checkRange : (Boolean -> Boolean -> Boolean) -> Tuple (Range Int) (Range Int) -> Boolean
+checkRange op (r1 ; r2) =
+  rangeStart r1 in r2 `op` rangeEnd r1 in r2
+  || rangeStart r2 in r1 `op` rangeEnd r2 in r1
+
+pub
+part1 : Unit -> Int
+part1 () =
+  input |> List.count (checkRange (&&))
+
+pub
+part2 : Unit -> Int
+part2 () =
+  input |> List.count (checkRange (||))
