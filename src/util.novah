@@ -9,3 +9,8 @@ pub
 readProcess : Int32 -> String -> (String -> a) -> List a
 readProcess day sep mapFn =
   readDay day |> String.split sep |> List.map mapFn
+
+pub
+transpose : List String -> List String
+transpose =
+  List.map String.toList >> List.zipAll >> List.map String.fromList

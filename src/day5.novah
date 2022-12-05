@@ -1,0 +1,47 @@
+module day5
+
+import util (readProcess, transpose)
+
+typealias Move = { num : Int, from : Int, to : Int }
+
+#[noWarn]
+input : Tuple (List String) (List Move)
+input =
+  let parseCrates lines =
+    Re.replaceAll #"\[|\]" " " lines
+    |> String.split "\n"
+    |> removeLast
+    |> transpose
+    |> List.remove String.isBlank
+    |> List.map (String.stripl)
+
+  let parseMove line =
+    let [_, num, from, to] = Re.find #"move (\d+) from (\d+) to (\d+)" line
+    { num: int num, from: int from - 1, to: int to - 1 }
+
+  let parse [top, bottom] =
+    parseCrates top ; String.split "\n" bottom |> List.map parseMove
+
+  readProcess 5 "\n\n" identity |> parse
+
+move : (String -> String) -> List Move -> List String -> String
+move fn moves stack =
+  let go mvs st = case mvs of
+    [] -> st
+    [{num, from, to} :: rest] ->
+      let took = String.take num st.[from]
+      setAt from (String.drop num st.[from]) st
+      |> setAt to (fn took ++ st.[to])
+      |> go rest
+
+  go moves stack |> List.map (_ ! 0) |> String.fromList
+
+pub
+part1 : Unit -> String
+part1 () =
+  move String.reverse (snd input) (fst input)
+
+pub
+part2 : Unit -> String
+part2 () =
+  move identity (snd input) (fst input)
