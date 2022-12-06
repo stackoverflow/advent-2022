@@ -3,19 +3,14 @@ module day6
 
 import util (readDay)
 
-findPacket length input =
-  let go acc i =
-    let ch = input ! i
-    let newacc = case List.indexOf ch acc of
-      -1 -> acc += ch
-      index -> List.slice (index + 1) (len acc) acc += ch
+input = readDay 6 |> String.toList
 
-    if len newacc >= length then i + 1 else go newacc (i + 1)
+findPacket length =
+  List.partitionStep length 1 input
+  |> List.findIndex (\l -> len l == len (Set.fromList l))
+  |> _!!
+  |> (_ + length)
 
-  go [] 0
+pub part1 () = findPacket 4
 
-pub part1 () =
-  findPacket 4 (readDay 6)
-
-pub part2 () =
-  findPacket 14 (readDay 6)
+pub part2 () = findPacket 14
