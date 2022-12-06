@@ -6,10 +6,10 @@ import util (readDay)
 input = readDay 6 |> String.toList
 
 findPacket length =
-  List.partitionStep length 1 input
-  |> List.findIndex (\l -> len l == len (Set.fromList l))
-  |> _!!
-  |> (_ + length)
+  let go i =
+    let slice = List.slice i (i + length) input
+    if len slice == len (Set.fromList slice) then i + length else go (i + 1)
+  go 0
 
 pub part1 () = findPacket 4
 
