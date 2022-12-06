@@ -5,6 +5,7 @@ import day2 as D2
 import day3 as D3
 import day4 as D4
 import day5 as D5
+import day6 as D6
 import novah.test
 
 #[test: "Day 1 test"]
@@ -36,6 +37,12 @@ day5Test : Unit -> Unit
 day5Test () =
   D5.part1 () `shouldBe` "JDTMRWCQJ"
   D5.part2 () `shouldBe` "VHJDDCWRD"
+
+#[test: "Day 6 test"]
+day6Test : Unit -> Unit
+day6Test () =
+  D6.part1 () `shouldBe` 1578
+  D6.part2 () `shouldBe` 2178
 
 pub
 main : Array String -> Unit

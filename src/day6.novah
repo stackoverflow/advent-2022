@@ -1,0 +1,21 @@
+#[noWarn]
+module day6
+
+import util (readDay)
+
+findPacket length input =
+  let go acc i =
+    let ch = input ! i
+    let newacc = case List.indexOf ch acc of
+      -1 -> acc += ch
+      index -> List.slice (index + 1) (len acc) acc += ch
+
+    if len newacc >= length then i + 1 else go newacc (i + 1)
+
+  go [] 0
+
+pub part1 () =
+  findPacket 4 (readDay 6)
+
+pub part2 () =
+  findPacket 14 (readDay 6)
