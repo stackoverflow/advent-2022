@@ -1,11 +1,15 @@
 module test.main
 
 import day1 as D1
+import day10 as D10
 import day2 as D2
 import day3 as D3
 import day4 as D4
 import day5 as D5
 import day6 as D6
+import day7 as D7
+import day8 as D8
+import day9 as D9
 import novah.test
 
 #[test: "Day 1 test"]
@@ -43,6 +47,35 @@ day6Test : Unit -> Unit
 day6Test () =
   D6.part1 () `shouldBe` 1578
   D6.part2 () `shouldBe` 2178
+
+#[test: "Day 7 test"]
+day7Test : Unit -> Unit
+day7Test () =
+  D7.part1 () `shouldBe` 1306611L
+  D7.part2 () `shouldBe` 13210366L
+
+#[test: "Day 8 test"]
+day8Test : Unit -> Unit
+day8Test () =
+  D8.run () `shouldBe` (1695 ; 287040)
+
+#[test: "Day 9 test"]
+day9Test : Unit -> Unit
+day9Test () =
+  D9.run () `shouldBe` (6266 ; 2369)
+
+#[test: "Day 10 test"]
+day10Test : Unit -> Unit
+day10Test () =
+  let img =
+    String.stripIndent """
+    ###..#..#.###....##.###..###..#.....##..
+    #..#.#.#..#..#....#.#..#.#..#.#....#..#.
+    #..#.##...#..#....#.###..#..#.#....#..#.
+    ###..#.#..###.....#.#..#.###..#....####.
+    #.#..#.#..#....#..#.#..#.#....#....#..#.
+    #..#.#..#.#.....##..###..#....####.#..#."""
+  D10.run () `shouldBe` (15120 ; img)
 
 pub
 main : Array String -> Unit

@@ -1,0 +1,29 @@
+module day8
+
+import novah.list (map, flatMapIndexed, mapIndexed, count, maxOf, any, all, productOf)
+import util (readProcess)
+
+pub
+run : Unit -> Tuple Int32 Int32
+run () =
+  let input = readProcess 8 "\n" (String.toList >> map (toString >> int))
+
+  let lineOfSight i j =
+    let is =
+      [[(i - 1) `downTo` 0], [(i + 1) ... len input.[0]]] |> map (map (_ ; j))
+    let js =
+      [[(j - 1) `downTo` 0], [(j + 1) ... len input]] |> map (map (i ; _))
+    is ++ js |> map (map \(x ; y) -> input.[y].[x])
+
+  let countRoute num acc = case _ of
+    [] -> acc
+    [x :: rest] -> if x >= num then acc + 1 else countRoute num (acc + 1) rest
+
+  let vals =
+    input |> flatMapIndexed (\y l -> mapIndexed (\x h -> { x, y, h }) l)
+
+  let part1 =
+    vals |> count (\{x, y, h} -> lineOfSight x y |> any (all (_ < h)))
+  let part2 =
+    vals |> maxOf (\{x, y, h} -> lineOfSight x y |> productOf (countRoute h 0))
+  part1 ; part2!!

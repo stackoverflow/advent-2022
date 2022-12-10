@@ -1,0 +1,40 @@
+module day9
+
+import util (readProcess)
+
+#[noWarn]
+pub
+run : Unit -> Tuple Int Int
+run () =
+  let parse [dir, num] = dir ! 0 ; int num
+  let input = readProcess 9 "\n" (String.split " " >> parse)
+
+  let dist (hx ; hy) (tx ; ty) =
+    Math.abs ((hx : Int) - tx) + Math.abs (hy - ty)
+  let straights (x ; y) = [(x - 1 ; y), (x + 1 ; y), (x ; y + 1), (x ; y - 1)]
+  let diagonals (x ; y) =
+    [(x - 1 ; y - 1), (x - 1 ; y + 1), (x + 1 ; y + 1), (x + 1 ; y - 1)]
+  let newHead (x ; y) = case _ of
+    'U' -> x ; y + 1
+    'D' -> x ; y - 1
+    'R' -> x + 1 ; y
+    _ -> x - 1 ; y
+
+  let follow head pos = case dist head pos of
+    x if x >= 3 -> diagonals pos |> List.minBy (dist head) |> _!!
+    x if x == 2 && head !in diagonals pos -> straights pos |> List.minBy (dist head) |> _!!
+    _ -> pos
+
+  let move rope acc = case _ of
+    [] -> acc
+    [(_ ; 0) :: rest] -> move rope acc rest
+    [(dir ; x) :: rest] ->
+      let calc res k = case res of
+        [] -> newHead k dir
+        _ -> follow res.[-1] k
+      let newRope = List.foldl (\res k -> res += calc res k) [] rope
+      move newRope (Set.add newRope.[-1] acc) ((dir ; (x - 1)) :: rest)
+
+  let part1 = input |> move [(0 ; 0), (0 ; 0)] #{(0 ; 0)} |> len
+  let part2 = input |> move (List.repeat 10 (0 ; 0)) #{(0 ; 0)} |> len
+  part1 ; part2

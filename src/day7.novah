@@ -1,0 +1,63 @@
+module day7
+
+import util (readDay)
+
+type FS
+  = File Int64 String
+  | Dir String
+
+#[noWarn]
+buildDirs : Map String (List FS) -> List String -> List String -> Map String (List FS)
+buildDirs acc dir lines = case lines of
+  [] -> acc
+  [line :: rest] ->
+    let cwd = String.join "/" dir
+    case line of
+      #"\$ ls" -> buildDirs acc dir rest
+      #"dir .*" ->
+        let name = Re.find #"dir (\w+)" line |> _.[1]
+        let newAcc = Map.updateOr cwd (_ += Dir name) [Dir name] acc
+        buildDirs newAcc dir rest
+      #"\d.*" ->
+        let [_, size, name] = Re.find #"(\d+) ([\w\.]+)" line
+        let file = File (int64 size) name
+        let newAcc = Map.updateOr cwd (_ += file) [file] acc
+        buildDirs newAcc dir rest
+      #"\$ cd.*" ->
+        case Re.find #"\$ cd ([\w/\.]+)" line |> _.[1] of
+          ".." -> buildDirs acc (removeLast dir) rest
+          name -> buildDirs acc (dir += name) rest
+
+calcSize : Map String (List FS) -> String -> (Tuple (List Int64) Int64)
+calcSize dirs cwd =
+  let map = (Map.new [] : Map String Int64)#linear()
+  let go dirss dir acc =
+    let vals = dirss .! dir
+    let total =
+      vals
+      |> List.sumOf case _ of
+        Dir name -> go dirss (format "%s/%s" [dir, name]) acc
+        File size _ -> size
+    Map.put dir total acc
+    total
+
+  let total = go dirs cwd map
+  map#forked() |> Map.values ; total
+
+input : Map String (List FS)
+input =
+  readDay 7 |> String.split "\n" |> buildDirs (Map.new []) []
+
+pub
+part1 : Unit -> Int64
+part1 () =
+  let (map ; _) = calcSize input "/"
+  map |> List.filter (_ <= 100000L) |> List.sum
+
+pub
+part2 : Unit -> Int64
+part2 () =
+  let (map ; total) = calcSize input "/"
+  let unused = 70000000L - total
+  let needed = 30000000L - unused
+  map |> List.filter (_ > needed) |> List.sort |> _.[0]
