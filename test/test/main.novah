@@ -10,6 +10,7 @@ import day6 as D6
 import day7 as D7
 import day8 as D8
 import day9 as D9
+import day11 as D11
 import novah.test
 
 #[test: "Day 1 test"]
@@ -76,6 +77,11 @@ day10Test () =
     #.#..#.#..#....#..#.#..#.#....#....#..#.
     #..#.#..#.#.....##..###..#....####.#..#."""
   D10.run () `shouldBe` (15120 ; img)
+
+#[test: "Day 11 test"]
+day11Test : Unit -> Unit
+day11Test () =
+  D11.run () `shouldBe` (56120L ; 24389045529L)
 
 pub
 main : Array String -> Unit

@@ -1,0 +1,43 @@
+module day11
+
+import util (readProcess)
+
+#[noWarn]
+pub
+run : Unit -> Tuple Int64 Int64
+run () =
+  let findInt str = Re.findAll #"\d+" str |> List.flatten |> List.map int64
+  let parse monke =
+    let [monkey, itemsStr, opStr, testStr, ifT, ifF] = String.split "\n" monke
+    let [_, fn, val] = Re.find #"new = old (.) (\w+)" opStr
+    let op = case fn, val of
+      "+", "old" -> (_ * 2L)
+      "*", "old" -> \x -> x * x
+      "+", v -> (_ + int64 v)
+      _, v -> (_ * int64 v)
+    let [div, vtrue, vfalse] = findInt testStr ++ findInt ifT ++ findInt ifF
+    let test = \x -> if x % div == 0L then int vtrue else int vfalse
+    let index = int (findInt monkey).[0]
+    { items: findInt itemsStr, op, test, index, total: 0L, div }
+
+  let input = readProcess 11 "\n\n" parse
+
+  let commonDiv = List.productOf _.div input
+  let div x = x % commonDiv
+  let play notWorried round monkes = case round of
+    0 -> List.map _.total monkes |> List.sort |> \l -> l.[-1] * l.[-2]
+    _ ->
+      let newMonkes = List.withLinear monkes \ms ->
+        List.forEach ms \{items, op, test, index} ->
+          let worry = if notWorried then op >> div >> (_ / 3L) else op >> div
+          let worries = items |> List.map worry
+          List.forEach worries \it ->
+            updateAt (test it) { .items -> _ += it | _ } ms
+            ()
+          updateAt index { .items = [], .total -> _ + int64 (len items) | _ } ms
+          ()
+      play notWorried (round - 1) newMonkes
+
+  let part1 = play true 20 input
+  let part2 = play false 10000 input
+  part1 ; part2

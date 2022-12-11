@@ -8,21 +8,19 @@ run () =
   let parse line = (String.split " " line |> List.nth 1) ?? int
   let input = readProcess 10 "\n" parse
 
-  let exec cycle (reg : Int) acc = case _ of
-    [] -> acc
-    [None :: rest] -> exec (cycle + 1) reg (acc += (cycle ; reg)) rest
-    [Some x :: rest] ->
-      let newAcc = acc ++ [(cycle ; reg), (cycle + 1) ; reg]
-      exec (cycle + 2) (reg + x) newAcc rest
+  let exec x acc = case _ of
+    [] -> acc += x
+    [None :: rest] -> exec x (acc += x) rest
+    [Some v :: rest] -> exec (x + v) (acc ++ [x, x]) rest
 
-  let draw (cycle ; reg) =
-    if ((cycle - 1) % 40) in [(reg - 1) .. (reg + 1)] then "#" else "."
+  let draw cycle x =
+    if (cycle % 40) in [(x - 1) .. (x + 1)] then "#" else "."
 
-  let strengths = exec 1 1 [] input
-  let sigStrs = strengths |> List.map \(x ; y) -> x * y
+  let strengths = exec 1 [] input
+  let sigStrs = strengths |> List.mapIndexed (*)
   let part1 =
-    range 19 220 40 |> rangeToList |> List.map sigStrs.[_] |> List.sum
+    range 20 220 40 |> rangeToList |> List.map sigStrs.[_] |> List.sum
 
-  let img = strengths |> List.map draw |> List.partition 40
+  let img = strengths |> List.mapIndexed draw |> List.partition 40
   let part2 = img |> List.map (String.join "") |> String.join "\n"
   part1 ; part2
