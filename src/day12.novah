@@ -1,0 +1,60 @@
+module day12
+
+import util (readProcess)
+
+#[derive: { equalsPoint: "Equals", showPoint: "Show" }]
+type Point = Point Int Int Char
+
+bfs : Point -> Char -> (Point -> List Point) -> List Point
+bfs start end neighbors =
+  let q = atom [start]
+  let explored = atom #{start}
+  let parents = (Map.new [] : Map Point Point)#linear()
+  let endNode = atom start
+  while len @q > 0 do
+    let (Point _ _ ch) as v = @q.[0]
+    q ::= removeFirst
+    if ch == end then
+      endNode := v
+      q := []
+    else
+      List.forEach (neighbors v) \node ->
+        if node !in @explored then
+          explored ::= Set.add node
+          Map.put node v parents
+          q ::= List.addLast node
+          ()
+
+  let makePath acc node = case Map.get node parents of
+    Some x -> makePath (acc += x) x
+    None -> List.reverse acc
+
+  makePath [] @endNode
+
+pub
+run : Unit -> Tuple Int32 Int32
+run () =
+  let parse input =
+    List.flatMapIndexed
+      (\y line -> line |> List.mapIndexed \x c -> Point x y c)
+      input
+  let input = readProcess 12 "\n" (String.toList) |> parse
+  let start = (List.find (\(Point _ _ c) -> c == 'S') input)!!
+  let end = (List.find (\(Point _ _ c) -> c == 'E') input)!!
+
+  let charMap c = Map.new ['S' ; 'a', 'E' ; 'z'] |> Map.getOr c c |> int
+  let neighbors inv (Point x y c) =
+    let squares = #{(x - 1 ; y), (x + 1 ; y), (x ; y - 1), (x ; y + 1)}
+    let compChars f t =
+      let (from ; to) = charMap f ; charMap t
+      if inv then
+        from <= to || (from - 1) == to
+      else
+        from >= to || from == (to - 1)
+    input
+    |> List.filter \(Point i j ch) ->
+      (i ; j) in squares && compChars c ch
+
+  let part1 = bfs start 'E' (neighbors false)
+  let part2 = bfs end 'a' (neighbors true)
+  len part1 ; len part2

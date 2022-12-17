@@ -1,0 +1,73 @@
+#[noWarn]
+module day13
+
+import util (readProcess)
+
+type Packet
+  = PList (List Packet)
+  | Num Int32
+
+eqPacket = case _, _ of
+  Num x, Num y -> x == y
+  PList [], PList [] -> true
+  _, PList [] -> false
+  PList [], _ -> false
+  PList [x :: xs], PList [y :: ys] -> eqPacket x y && eqPacket (PList xs) (PList ys)
+  _, _ -> false
+
+inOrder = case _, _ of
+  Num x, Num y -> compare x y
+  PList [], PList [] -> LT
+  PList [], PList [_ :: _] -> LT
+  PList [_ :: _], PList [] -> GT
+  PList [Num x :: xs], PList [Num y :: ys] -> case compare x y of
+    EQ -> inOrder (PList xs) (PList ys)
+    res -> res
+  PList [x :: rest], PList [y :: rest2] -> case inOrder x y of
+    EQ -> inOrder (PList rest) (PList rest2)
+    res -> res
+  (Num _) as num, (PList _) as pl -> inOrder (PList [num]) pl
+  (PList _) as pl, (Num _) as num -> inOrder pl (PList [num])
+
+instance equalsPacket = Equals eqPacket
+instance ordPacket = Ord equalsPacket { compare: inOrder }
+
+parseNum acc =
+  let collect chs = case _ of
+    [] -> String.fromList chs |> int |> Num ; []
+    [c :: rest] if Char#isDigit(c) -> collect (chs += c) rest
+    rest -> String.fromList chs |> int |> Num ; rest
+  collect [] acc
+
+parseList chars =
+  let go acc = case _ of
+    [] -> PList acc ; []
+    [',' :: rest] -> go acc rest
+    chs if Char#isDigit(chs.[0]) ->
+      let (num ; rest) = parseNum chs
+      go (acc += num) rest
+    ['[' :: _] as chs ->
+      let (l ; rest) = parseList chs
+      go (acc += l) rest
+    [']' :: rest] -> PList acc ; rest
+  go [] (removeFirst chars)
+
+pub run () =
+  let parser packets =
+    let parse line =
+      if Char#isDigit(line.[0]) then parseNum line else parseList line
+    packets |> String.lines |> List.map (String.toList >> parse >> fst)
+  let input = readProcess 13 "\n\n" parser |> List.flatten
+
+  let part1 =
+    input
+    |> List.partition 2
+    |> List.mapIndexed (\i [p1, p2] -> if inOrder p1 p2 == LT then i + 1 else 0)
+    |> List.sum
+  
+  let div1 = PList [PList [Num 2]]
+  let div2 = PList [PList [Num 6]]
+  let sorted = input ++ [div1, div2] |> List.sort
+  let part2 =
+    ((List.findIndex (_ == div1) sorted)!! + 1) * ((List.findIndex (_ == div2) sorted)!! + 1)
+  part1 ; part2

@@ -14,3 +14,18 @@ pub
 transpose : List String -> List String
 transpose =
   List.map String.toList >> List.zipAll >> List.map String.fromList
+
+pub
+findNum : (String -> a) -> String -> (List a)
+findNum toNum str =
+  Re.findAll #"\d+" str |> List.flatten |> List.map toNum
+
+pub
+pprintList : {{ Show a }} -> List a -> Unit
+pprintList {{_}} = case _ of
+  [] -> println "[]"
+  [x] -> printfln "[%s]" [show x]
+  [x :: rest] ->
+    printfln "[ %s" [show x]
+    List.forEach rest \v -> printfln ", %s" [show v]
+    println "]"

@@ -1,0 +1,37 @@
+module day14
+
+import util (readProcess, findNum)
+
+#[noWarn]
+pub
+run : Unit -> Tuple Int Int
+run () =
+  let parse line =
+    findNum int line |> List.partition 2 |> List.map \[x, y] -> x ; y
+  let toSet acc = case _ of
+    [] -> acc
+    [(x ; y), (x2 ; y2) as sec :: rest] ->
+      let newAcc = case x == x2, y == y2 of
+        true, _ -> [y .. y2] |> List.foldl (\set v -> Set.add (x ; v) set) acc
+        _, true -> [x .. x2] |> List.foldl (\set v -> Set.add (v ; y) set) acc
+      if len rest == 0 then newAcc else toSet newAcc (sec :: rest)
+
+  let input =
+    readProcess 14 "\n" parse |> List.map (toSet #{}) |> Set.fromList |> Set.flatten
+
+  let floor = Set.toList input |> List.sortBy snd |> _.[-1] |> snd |> (_ + 2)
+  let initPos = (500 ; 0)
+
+  let fall abyss acc = case _ of
+    pos if pos in acc -> len acc
+    (_ ; y) as pos if y + 1 == floor->
+      if abyss then len acc else fall abyss (Set.add pos acc) initPos
+    (x ; y) as pos -> case (x ; y + 1), (x - 1; y + 1), (x + 1; y + 1) of
+      down, _, _ if down !in acc -> fall abyss acc down
+      _, left, _ if left !in acc -> fall abyss acc left
+      _, _, right if right !in acc -> fall abyss acc right
+      _, _, _ -> fall abyss (Set.add pos acc) initPos
+
+  let part1 = (fall true input initPos) - len input
+  let part2 = (fall false input initPos) - len input
+  part1 ; part2

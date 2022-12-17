@@ -1,12 +1,12 @@
 module day11
 
-import util (readProcess)
+import util (readProcess, findNum)
 
 #[noWarn]
 pub
 run : Unit -> Tuple Int64 Int64
 run () =
-  let findInt str = Re.findAll #"\d+" str |> List.flatten |> List.map int64
+  let findInt = findNum int64
   let parse monke =
     let [monkey, itemsStr, opStr, testStr, ifT, ifF] = String.split "\n" monke
     let [_, fn, val] = Re.find #"new = old (.) (\w+)" opStr

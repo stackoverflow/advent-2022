@@ -11,6 +11,9 @@ import day7 as D7
 import day8 as D8
 import day9 as D9
 import day11 as D11
+import day12 as D12
+import day13 as D13
+import day14 as D14
 import novah.test
 
 #[test: "Day 1 test"]
@@ -82,6 +85,21 @@ day10Test () =
 day11Test : Unit -> Unit
 day11Test () =
   D11.run () `shouldBe` (56120L ; 24389045529L)
+
+#[test: "Day 12 test"]
+day12Test : Unit -> Unit
+day12Test () =
+  D12.run () `shouldBe` (330 ; 321)
+
+#[test: "Day 13 test"]
+day13Test : Unit -> Unit
+day13Test () =
+  D13.run () `shouldBe` (6568 ; 19493)
+
+#[test: "Day 14 test"]
+day14Test : Unit -> Unit
+day14Test () =
+  D14.run () `shouldBe` (745 ; 27551)
 
 pub
 main : Array String -> Unit
